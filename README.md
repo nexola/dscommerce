@@ -5,7 +5,7 @@
 
 DS Commerce é uma API Rest projetada para simular um site de vendas, com autenticação e controle de acesso.
 
-Projeto desenvolvido através do curso Java Spring Professional da [DevSuperior](https://devsuperior.com "Site da DevSuperior")
+Projeto desenvolvido através do curso Java Spring Professional da [DevSuperior](https://devsuperior.club "Site da DevSuperior")
 
 ## Modelo conceitual
 ![Modelo Conceitual](https://github.com/nexola/dscommerce/assets/103954392/1c65181d-6ac2-46da-9247-66c219be24bb)
