@@ -1,6 +1,7 @@
 package com.devsuperior.dscommerce.services;
 
 import com.devsuperior.dscommerce.dto.ProductDTO;
+import com.devsuperior.dscommerce.dto.ProductMinDTO;
 import com.devsuperior.dscommerce.entities.Product;
 import com.devsuperior.dscommerce.factories.ProductFactory;
 import com.devsuperior.dscommerce.repositories.ProductRepository;
@@ -9,11 +10,17 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.List;
 import java.util.Optional;
 
 @ExtendWith(SpringExtension.class)
@@ -29,6 +36,7 @@ public class ProductServiceTests {
     private Long nonExistingId;
     private Product product;
     private String productName;
+    private PageImpl<Product> page;
 
     @BeforeEach
     void setUp() throws Exception {
@@ -36,9 +44,12 @@ public class ProductServiceTests {
         nonExistingId = 2L;
         product = ProductFactory.createProduct();
         productName = "Computer";
+        page = new PageImpl<>(List.of(product));
 
         Mockito.when(repository.findById(existingId)).thenReturn(Optional.of(product));
         Mockito.when(repository.findById(nonExistingId)).thenReturn(Optional.empty());
+
+        Mockito.when(repository.searchByName(ArgumentMatchers.anyString(), (Pageable) ArgumentMatchers.any())).thenReturn(page);
     }
 
     @Test
@@ -55,5 +66,15 @@ public class ProductServiceTests {
         Assertions.assertThrows(ResourceNotFoundException.class, () -> {
             service.findById(nonExistingId);
         });
+    }
+
+    @Test
+    public void findAllShouldReturnPagedProductMinDTO() {
+        Pageable pageable = PageRequest.of(0, 12);
+        String name = "Computer";
+
+        Page<ProductMinDTO> result = service.findAll(name, pageable);
+
+        Assertions.assertNotNull(result);
     }
 }
