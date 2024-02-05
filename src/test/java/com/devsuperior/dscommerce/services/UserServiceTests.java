@@ -1,5 +1,6 @@
 package com.devsuperior.dscommerce.services;
 
+import com.devsuperior.dscommerce.dto.UserDTO;
 import com.devsuperior.dscommerce.entities.User;
 import com.devsuperior.dscommerce.factories.UserDetailsFactory;
 import com.devsuperior.dscommerce.factories.UserFactory;
@@ -36,6 +37,7 @@ public class UserServiceTests {
     private String existingUsername, nonExistingUsername;
     private User user;
     private List<UserDetailsProjection> userDetails;
+    private UserService spyService;
 
     @BeforeEach
     void setUp() throws Exception {
@@ -43,6 +45,7 @@ public class UserServiceTests {
         nonExistingUsername = "user@gmail.com";
         user = UserFactory.createCustomClientUser(1L, existingUsername);
         userDetails = UserDetailsFactory.createCustomAdminUser(existingUsername);
+        spyService = Mockito.spy(service);
 
         Mockito.when(repository.searchUserAndRolesByEmail(existingUsername)).thenReturn(userDetails);
         Mockito.when(repository.searchUserAndRolesByEmail(nonExistingUsername)).thenReturn(new ArrayList<>());
@@ -80,6 +83,23 @@ public class UserServiceTests {
         Mockito.doThrow(ClassCastException.class).when(customUserUtil).getLoggedUsername();
         Assertions.assertThrows(UsernameNotFoundException.class, () -> {
             service.authenticated();
+        });
+    }
+
+    @Test
+    public void getMeShouldReturnUserDTOWhenUserAuthenticated() {
+        Mockito.doReturn(user).when(spyService).authenticated();
+        UserDTO result = spyService.getMe();
+
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(result.getEmail(), existingUsername);
+    }
+
+    @Test
+    public void getMeShouldThrowUserNameNotFoundExceptionWhenUserNotAuthenticated() {
+        Mockito.doThrow(UsernameNotFoundException.class).when(spyService).authenticated();
+        Assertions.assertThrows(UsernameNotFoundException.class, () -> {
+            spyService.getMe();
         });
     }
 }
