@@ -5,7 +5,7 @@ import com.devsuperior.dscommerce.entities.Category;
 public class CategoryFactory {
 
     public static Category createCategory() {
-        return new Category(1L, "Categoria");
+        return new Category(2L, "Categoria");
     }
 
     public static Category createCategory(Long id, String name) {

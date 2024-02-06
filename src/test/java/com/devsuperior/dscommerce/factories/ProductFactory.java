@@ -1,5 +1,7 @@
 package com.devsuperior.dscommerce.factories;
 
+import com.devsuperior.dscommerce.dto.CategoryDTO;
+import com.devsuperior.dscommerce.dto.ProductDTO;
 import com.devsuperior.dscommerce.entities.Category;
 import com.devsuperior.dscommerce.entities.Product;
 
@@ -16,5 +18,12 @@ public class ProductFactory {
         Product product = createProduct();
         product.setName(name);
         return product;
+    }
+
+    public static ProductDTO createProductDTO() {
+        Product product = new Product(null, "PlayStation 5", "Lorem Ipsum Dolor sit amet", 3999.90, "imgUrl");
+        Category category = new Category(2L, "Eletrônicos");
+        product.getCategories().add(category);
+        return new ProductDTO(product);
     }
 }
