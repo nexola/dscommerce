@@ -50,7 +50,7 @@ public class ProductControllerIT {
         clientPassword = "123456";
         adminUsername = "alex@gmail.com";
         adminPassword = "123456";
-        product = new Product(null, "PlayStation 5", "Lorem Ipsum Dolor sit amet", 3999.90, "imgUrl");
+        product = new Product(null, "The Lord of the Rings", "Lorem Ipsum Dolor sit amet", 3999.90, "imgUrl");
         Category category = new Category(2L, "Eletrônicos");
         product.getCategories().add(category);
         productDTO = new ProductDTO(product);
@@ -267,4 +267,6 @@ public class ProductControllerIT {
 
         result.andExpect(status().isForbidden());
     }
+
+
  }
