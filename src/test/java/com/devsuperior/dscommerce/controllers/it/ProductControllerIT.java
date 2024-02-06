@@ -186,4 +186,32 @@ public class ProductControllerIT {
 
         result.andExpect(status().isUnprocessableEntity());
     }
+
+    @Test
+    public void insertShouldReturnForbiddenWhenClientLogged() throws Exception {
+        String jsonBody = mapper.writeValueAsString(productDTO);
+
+        ResultActions result = mockMvc.perform(
+                        MockMvcRequestBuilders.post("/products")
+                                .header("Authorization", "Bearer " + clientToken)
+                                .content(jsonBody)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .accept(MediaType.APPLICATION_JSON));
+
+        result.andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void insertShouldReturnUnauthorizedWhenNoUserLogged() throws Exception {
+        String jsonBody = mapper.writeValueAsString(productDTO);
+
+        ResultActions result = mockMvc.perform(
+                MockMvcRequestBuilders.post("/products")
+                        .header("Authorization", "Bearer " + invalidToken)
+                        .content(jsonBody)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON));
+
+        result.andExpect(status().isUnauthorized());
+    }
  }
