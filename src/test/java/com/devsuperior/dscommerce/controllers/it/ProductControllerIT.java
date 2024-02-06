@@ -15,6 +15,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -34,7 +35,7 @@ public class ProductControllerIT {
     @Autowired
     private ObjectMapper mapper;
 
-    private Long existingId, nonExistingId;
+    private Long existingId, nonExistingId, dependentId;
     private String clientUsername, clientPassword, adminUsername, adminPassword, productName, adminToken, clientToken, invalidToken;
     private ProductDTO productDTO;
     private Product product;
@@ -43,6 +44,7 @@ public class ProductControllerIT {
     void setUp() throws Exception {
         productName = "macbook";
         existingId = 1L;
+        dependentId = 3L;
         nonExistingId = 1000L;
         clientUsername = "maria@gmail.com";
         clientPassword = "123456";
@@ -213,5 +215,56 @@ public class ProductControllerIT {
                         .accept(MediaType.APPLICATION_JSON));
 
         result.andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    public void deleteShouldReturnNoContentWhenAdminLogged() throws Exception{
+        ResultActions result = mockMvc.perform(
+                MockMvcRequestBuilders.delete("/products/{id}", existingId)
+                        .header("Authorization", "Bearer " + adminToken)
+                        .accept(MediaType.APPLICATION_JSON));
+
+        result.andExpect(status().isNoContent());
+    }
+
+    @Test
+    public void deleteShouldReturnNotFoundWhenIdDoesNotExist() throws Exception{
+        ResultActions result = mockMvc.perform(
+                MockMvcRequestBuilders.delete("/products/{id}", nonExistingId)
+                        .header("Authorization", "Bearer " + adminToken)
+                        .accept(MediaType.APPLICATION_JSON));
+
+        result.andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void deleteShouldReturnUnauthorizedWhenNoUserLogged() throws Exception{
+        ResultActions result = mockMvc.perform(
+                MockMvcRequestBuilders.delete("/products/{id}", existingId)
+                        .header("Authorization", "Bearer " + invalidToken)
+                        .accept(MediaType.APPLICATION_JSON));
+
+        result.andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @Transactional(propagation = Propagation.SUPPORTS)
+    public void deleteShouldReturnBadRequestWhenDependentProduct() throws Exception{
+        ResultActions result = mockMvc.perform(
+                MockMvcRequestBuilders.delete("/products/{id}", dependentId)
+                        .header("Authorization", "Bearer " + adminToken)
+                        .accept(MediaType.APPLICATION_JSON));
+
+        result.andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void deleteShouldReturnForbiddenWhenClientLogged() throws Exception{
+        ResultActions result = mockMvc.perform(
+                MockMvcRequestBuilders.delete("/products/{id}", existingId)
+                        .header("Authorization", "Bearer " + clientToken)
+                        .accept(MediaType.APPLICATION_JSON));
+
+        result.andExpect(status().isForbidden());
     }
  }
