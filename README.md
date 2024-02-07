@@ -3,7 +3,7 @@
 
 # Sobre o projeto
 
-DS Commerce é uma API Rest projetada para simular um site de vendas, com autenticação e controle de acesso.
+DS Commerce é uma API Rest projetada para simular um site de vendas, com autenticação, controle de acesso e testes automatizados.
 
 Projeto desenvolvido através do curso Java Spring Professional da [DevSuperior](https://devsuperior.club "Site da DevSuperior")
 
@@ -16,6 +16,10 @@ Projeto desenvolvido através do curso Java Spring Professional da [DevSuperior]
 - JPA / Hibernate
 - Maven
 - OAuth2 / JWT
+- JUnit
+- Jacoco
+- MockMvc
+- RestAssured
 
 # Executando o projeto
 ```bash
@@ -26,6 +30,9 @@ git clone git@github.com:nexola/dscommerce.git
 [collection_postman.json](https://github.com/nexola/dscommerce/files/14003497/collection_postman.json) 
 
 [environment_postman.json](https://github.com/nexola/dscommerce/files/14003510/environment_postman.json)
+
+### Projeto de testes RestAssured
+[Link do repositório](https://github.com/nexola/dscommerce-restassured)
 
 # Requisições
 ## GET /products
@@ -58,13 +65,6 @@ Faz a requisição de login e retorna um token, liberando acesso aos recursos pa
 
 ## PUT /products/id
 Atualiza um produto pelo id (somente ADM)
-
-Formato body (x-www-form-urlencoded)
-```
-username -> myclientid
-password -> myclientsecret
-grant_type -> password
-```
 
 ## DELETE /products/id
 Remove um produto pelo id (somente ADM)
